@@ -1,0 +1,409 @@
+/* PDF 匯出專用樣式 - 全面平面化處理 */
+
+/* 基礎重置 */
+* {
+  box-sizing: border-box !important;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+body, html {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  line-height: 1.5 !important;
+}
+
+/* 移除所有視覺效果 */
+* {
+  box-shadow: none !important;
+  filter: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* 移除所有背景色，除了白色和主題色 */
+[class*='bg-'] {
+  background-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* 保留白色背景 */
+.bg-white, [class*='bg-white'] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* 保留主題背景色 */
+.bg-blue-600 { background-color: #2563eb !important; }
+.bg-green-600 { background-color: #16a34a !important; }
+.bg-purple-600 { background-color: #9333ea !important; }
+.bg-gray-600 { background-color: #4b5563 !important; }
+.bg-red-600 { background-color: #dc2626 !important; }
+
+/* TemplateE 和 TemplateF 的特殊背景色 */
+.bg-blue-700 { background-color: #1d4ed8 !important; }
+.bg-green-700 { background-color: #15803d !important; }
+.bg-purple-700 { background-color: #7c3aed !important; }
+.bg-gray-700 { background-color: #374151 !important; }
+.bg-red-700 { background-color: #b91c1c !important; }
+
+.bg-blue-800 { background-color: #1e40af !important; }
+.bg-green-800 { background-color: #166534 !important; }
+.bg-purple-800 { background-color: #6b21a8 !important; }
+.bg-gray-800 { background-color: #1f2937 !important; }
+.bg-red-800 { background-color: #991b1b !important; }
+
+.bg-blue-900 { background-color: #1e3a8a !important; }
+.bg-green-900 { background-color: #14532d !important; }
+.bg-purple-900 { background-color: #581c87 !important; }
+.bg-gray-900 { background-color: #111827 !important; }
+.bg-red-900 { background-color: #7f1d1d !important; }
+
+/* 移除所有裝飾性背景 */
+.bg-blue-50, .bg-green-50, .bg-purple-50, .bg-gray-50, .bg-red-50,
+.bg-gray-100, .bg-gray-200, .bg-gray-300, .bg-gray-400, .bg-gray-500 {
+  background-color: transparent !important;
+}
+
+/* 移除所有邊框 */
+[class*='border'] {
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+}
+
+/* 移除所有圓角 */
+[class*='rounded'] {
+  border-radius: 0 !important;
+}
+
+/* 移除所有陰影 */
+[class*='shadow'] {
+  box-shadow: none !important;
+}
+
+/* 移除所有 ring 效果 */
+[class*='ring'] {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* 修復定位問題 */
+.absolute, .fixed {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+/* 確保文字顏色正確 */
+.text-white, [class*='text-white'] {
+  color: #000000 !important;
+}
+
+/* 保留主題顏色 */
+.text-blue-600 { color: #2563eb !important; }
+.text-green-600 { color: #16a34a !important; }
+.text-purple-600 { color: #9333ea !important; }
+.text-gray-600 { color: #4b5563 !important; }
+.text-red-600 { color: #dc2626 !important; }
+
+/* TemplateE 和 TemplateF 的特殊文字顏色 */
+.text-blue-700 { color: #1d4ed8 !important; }
+.text-green-700 { color: #15803d !important; }
+.text-purple-700 { color: #7c3aed !important; }
+.text-gray-700 { color: #374151 !important; }
+.text-red-700 { color: #b91c1c !important; }
+
+.text-green-400 { color: #4ade80 !important; }
+.text-yellow-400 { color: #facc15 !important; }
+.text-gray-300 { color: #d1d5db !important; }
+.text-gray-200 { color: #e5e7eb !important; }
+
+/* 確保網格佈局正確 */
+.grid { display: grid !important; }
+.flex { display: flex !important; }
+.block { display: block !important; }
+.inline-block { display: inline-block !important; }
+
+/* 修復網格列設定 */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.lg\\:col-span-2 { grid-column: span 2 / span 2 !important; }
+.lg\\:col-span-1 { grid-column: span 1 / span 1 !important; }
+.md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+
+/* 修復 flex 佈局 */
+.flex-wrap { flex-wrap: wrap !important; }
+.items-center { align-items: center !important; }
+.items-start { align-items: flex-start !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-center { justify-content: center !important; }
+
+/* 確保間距正確 */
+.space-x-1 > * + * { margin-left: 0.25rem !important; }
+.space-x-2 > * + * { margin-left: 0.5rem !important; }
+.space-x-3 > * + * { margin-left: 0.75rem !important; }
+.space-x-4 > * + * { margin-left: 1rem !important; }
+.space-y-1 > * + * { margin-top: 0.25rem !important; }
+.space-y-2 > * + * { margin-top: 0.5rem !important; }
+.space-y-3 > * + * { margin-top: 0.75rem !important; }
+.space-y-4 > * + * { margin-top: 1rem !important; }
+.space-y-6 > * + * { margin-top: 1.5rem !important; }
+.space-y-8 > * + * { margin-top: 2rem !important; }
+
+/* 確保 padding 和 margin 正確 */
+.p-4 { padding: 1rem !important; }
+.p-6 { padding: 1.5rem !important; }
+.p-8 { padding: 2rem !important; }
+.p-12 { padding: 3rem !important; }
+.pb-4 { padding-bottom: 1rem !important; }
+.pb-8 { padding-bottom: 2rem !important; }
+.pl-4 { padding-left: 1rem !important; }
+.pl-6 { padding-left: 1.5rem !important; }
+.pl-8 { padding-left: 2rem !important; }
+.px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-6 { margin-bottom: 1.5rem !important; }
+.mb-8 { margin-bottom: 2rem !important; }
+.mb-12 { margin-bottom: 3rem !important; }
+.mt-4 { margin-top: 1rem !important; }
+.ml-2 { margin-left: 0.5rem !important; }
+.ml-4 { margin-left: 1rem !important; }
+.mr-2 { margin-right: 0.5rem !important; }
+
+/* 確保字體大小正確 */
+.text-4xl { font-size: 2.25rem !important; line-height: 1.2 !important; }
+.text-3xl { font-size: 1.875rem !important; line-height: 1.3 !important; }
+.text-2xl { font-size: 1.5rem !important; line-height: 1.4 !important; }
+.text-xl { font-size: 1.25rem !important; line-height: 1.4 !important; }
+.text-lg { font-size: 1.125rem !important; line-height: 1.5 !important; }
+.text-base { font-size: 1rem !important; line-height: 1.5 !important; }
+.text-sm { font-size: 0.875rem !important; line-height: 1.6 !important; }
+
+/* 確保字體粗細正確 */
+.font-bold { font-weight: 700 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-light { font-weight: 300 !important; }
+
+/* 確保列表樣式正確 */
+.list-disc { list-style-type: disc !important; }
+.list-inside { list-style-position: inside !important; }
+ul, ol { margin: 0.5rem 0 !important; padding-left: 1.5rem !important; }
+li { margin: 0.25rem 0 !important; }
+
+/* 確保圖片正確顯示 */
+img { max-width: 100% !important; height: auto !important; display: block !important; }
+
+/* 修復文字對齊 */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+/* 修復文字截斷 */
+.truncate { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+
+/* 修復空白處理 */
+.whitespace-pre-wrap { white-space: pre-wrap !important; }
+
+/* 移除所有裝飾性元素 */
+.w-1, .w-2, .w-3, .w-4, .w-5, .w-6, .w-8, .w-20, .w-24 {
+  width: auto !important;
+}
+.h-1, .h-2, .h-3, .h-4, .h-5, .h-6, .h-8, .h-20, .h-24 {
+  height: auto !important;
+}
+
+/* 移除所有圓形和裝飾性邊框 */
+.rounded-full {
+  border-radius: 0 !important;
+}
+
+/* 移除所有 overflow 限制 */
+.overflow-hidden, .overflow-auto, .overflow-scroll {
+  overflow: visible !important;
+}
+
+/* 確保連結樣式正確 */
+a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* 移除所有漸變背景 */
+[class*='gradient'], [class*='from-'], [class*='to-'] {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* 移除所有透明度效果 */
+[class*='opacity'] {
+  opacity: 1 !important;
+}
+
+/* 確保表格樣式正確 */
+table { border-collapse: collapse !important; width: 100% !important; }
+td, th { padding: 0.5rem !important; text-align: left !important; vertical-align: top !important; }
+
+/* 移除所有 transform 效果 */
+[class*='transform'], [class*='rotate'], [class*='scale'] {
+  transform: none !important;
+}
+
+/* 確保文字不被裁切 */
+* {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* 增加文字間距 */
+p, li, div {
+  margin-bottom: 0.5rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+/* 確保列表項目有足夠空間 */
+ul, ol {
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+li {
+  margin-bottom: 0.5rem !important;
+  line-height: 1.6 !important;
+}
+
+/* 移除所有動畫效果 */
+[class*='animate'], [class*='transition'] {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* 修復特定模板的特殊樣式 */
+.relative { position: relative !important; }
+.font-mono { font-family: "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace !important; }
+
+/* 確保響應式設計在 PDF 中正確工作 */
+@media print {
+  * { 
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  body { background: transparent !important; }
+  
+  /* 確保分頁正確 */
+  .resume-section { page-break-inside: avoid !important; }
+  
+  /* 避免標題在頁面底部 */
+  h1, h2, h3, h4, h5, h6 { page-break-after: avoid !important; }
+}
+
+/* 修復特定模板的顏色主題 */
+.text-gray-900 { color: #111827 !important; }
+.text-gray-800 { color: #1f2937 !important; }
+.text-gray-700 { color: #374151 !important; }
+.text-gray-600 { color: #4b5563 !important; }
+.text-gray-500 { color: #6b7280 !important; }
+.text-gray-400 { color: #9ca3af !important; }
+
+/* 修復特定模板的邊框顏色 */
+.border-blue-600 { border-color: #2563eb !important; }
+.border-green-600 { border-color: #16a34a !important; }
+.border-purple-600 { border-color: #9333ea !important; }
+.border-gray-600 { border-color: #4b5563 !important; }
+.border-red-600 { border-color: #dc2626 !important; }
+
+/* TemplateE 和 TemplateF 的特殊邊框顏色 */
+.border-blue-300 { border-color: #93c5fd !important; }
+.border-green-300 { border-color: #86efac !important; }
+.border-purple-300 { border-color: #c4b5fd !important; }
+.border-gray-300 { border-color: #d1d5db !important; }
+.border-red-300 { border-color: #fca5a5 !important; }
+
+.border-blue-200 { border-color: #bfdbfe !important; }
+.border-green-200 { border-color: #bbf7d0 !important; }
+.border-purple-200 { border-color: #ddd6fe !important; }
+.border-gray-200 { border-color: #e5e7eb !important; }
+.border-red-200 { border-color: #fecaca !important; }
+
+/* 修復特定模板的間距 */
+.gap-4 { gap: 1rem !important; }
+.leading-relaxed { line-height: 1.625 !important; }
+.max-w-2xl { max-width: 42rem !important; }
+.max-w-3xl { max-width: 48rem !important; }
+
+/* 修復特定模板的寬度和高度 */
+.w-full { width: 100% !important; }
+.h-full { height: 100% !important; }
+.object-cover { object-fit: cover !important; }
+
+/* 修復特定模板的響應式設計 */
+.md\\:space-y-1 > * + * { margin-top: 0.25rem !important; }
+.md\\:space-y-4 > * + * { margin-top: 1rem !important; }
+.md\\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+
+/* 修復特定模板的追蹤和字間距 */
+.tracking-wide { letter-spacing: 0.025em !important; }
+.tracking-tight { letter-spacing: -0.025em !important; }
+
+/* 修復特定模板的 flex 屬性 */
+.flex-1 { flex: 1 1 0% !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+
+/* 修復特定模板的 z-index */
+.z-10 { z-index: 10 !important; }
+
+/* 修復特定模板的邊框樣式 */
+.border-l-2 { border-left-width: 2px !important; border-left-style: solid !important; }
+.border-l-4 { border-left-width: 4px !important; border-left-style: solid !important; }
+.border-b-2 { border-bottom-width: 2px !important; border-bottom-style: solid !important; }
+
+/* 修復特定模板的邊框顏色 */
+.border-gray-200 { border-color: #e5e7eb !important; }
+
+/* 修復特定模板的背景色 */
+.bg-gray-200 { background-color: #e5e7eb !important; }
+.bg-gray-100 { background-color: #f3f4f6 !important; }
+
+/* 修復特定模板的文字顏色 */
+.text-gray-900 { color: #111827 !important; }
+.text-gray-700 { color: #374151 !important; }
+.text-gray-500 { color: #6b7280 !important; }
+
+/* 修復特定模板的間距 */
+.resume-section { margin-bottom: 1.5rem !important; }
+
+/* TemplateF 終端機樣式的特殊處理 */
+.text-green-400 { color: #4ade80 !important; }
+.text-yellow-400 { color: #facc15 !important; }
+.text-gray-300 { color: #d1d5db !important; }
+.text-gray-200 { color: #e5e7eb !important; }
+
+/* 修復表格樣式 */
+.border-collapse { border-collapse: collapse !important; }
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.w-24 { width: 6rem !important; }
+
+/* 修復特定模板的圓角 */
+.rounded-lg { border-radius: 0 !important; }
+
+/* 修復特定模板的透明度 */
+.opacity-90 { opacity: 1 !important; }
+.opacity-75 { opacity: 1 !important; } 
