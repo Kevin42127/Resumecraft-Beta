@@ -398,7 +398,20 @@ export const useResumeExport = () => {
         body: JSON.stringify({ html: htmlContent, filename })
       })
       setExportState(prev => ({ ...prev, progress: 70 }))
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        
+        // 如果是超時錯誤，使用前端PDF生成
+        if (response.status === 408 || errorData.code === 'TIMEOUT') {
+          console.log('後端PDF生成超時，切換到前端PDF生成')
+          setExportState(prev => ({ ...prev, progress: 50 }))
+          return await generateFrontendPDF(element, options)
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -410,6 +423,65 @@ export const useResumeExport = () => {
       window.URL.revokeObjectURL(url)
       setExportState({ isExporting: false, progress: 100, error: null })
       return { success: true, filename }
+    } catch (error) {
+      console.log('後端PDF生成失敗，嘗試前端PDF生成:', error)
+      setExportState(prev => ({ ...prev, progress: 50 }))
+      return await generateFrontendPDF(element, options)
+    }
+  }
+
+  // 前端PDF生成作為備用方案
+  const generateFrontendPDF = async (element: HTMLElement, options: ExportOptions = {}) => {
+    const { filename = 'resume.pdf' } = options
+    try {
+      setExportState(prev => ({ ...prev, progress: 60 }))
+      
+      // 動態導入前端PDF庫
+      const [html2canvas, jsPDF] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf')
+      ])
+      
+      setExportState(prev => ({ ...prev, progress: 80 }))
+      
+      // 生成canvas
+      const canvas = await html2canvas.default(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      })
+      
+      setExportState(prev => ({ ...prev, progress: 90 }))
+      
+      // 轉換為PDF
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF.default('p', 'mm', 'a4')
+      const imgWidth = 210 // A4寬度
+      const pageHeight = 295 // A4高度
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      let heightLeft = imgHeight
+      let position = 0
+      
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
+      }
+      
+      pdf.save(filename)
+      setExportState({ isExporting: false, progress: 100, error: null })
+      return { success: true, filename, method: 'frontend' }
     } catch (error) {
       setExportState({ isExporting: false, progress: 0, error: 'PDF生成失敗，請稍後再試' })
       throw error
