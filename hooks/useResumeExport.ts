@@ -376,9 +376,9 @@ export const useResumeExport = () => {
       const targetElement = document.querySelector('#resume-preview') as HTMLElement
       if (!targetElement) throw new Error('找不到履歷預覽元素 (#resume-preview)')
       
-      // 使用 Node.js PDF 生成器
-      console.log('使用 Node.js PDF 生成器')
-      return await generateNodePDF(targetElement, options)
+      // 直接使用前端 PDF 生成器（更穩定）
+      console.log('使用前端 PDF 生成器')
+      return await generateFrontendPDF(targetElement, options)
     } catch (error) {
       setExportState({ isExporting: false, progress: 0, error: error instanceof Error ? error.message : '匯出失敗' })
       throw error
