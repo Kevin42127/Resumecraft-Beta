@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   MessageSquare, 
@@ -9,9 +9,10 @@ import {
   ThumbsUp, 
   MessageCircle,
   Eye,
-  Calendar
+  Calendar,
+  Trash2
 } from 'lucide-react'
-import { ForumPost } from '@/types/forum'
+import { ForumPost, DeveloperAuth } from '@/types/forum'
 import ForumPostDetail from './ForumPostDetail'
 
 interface ForumPostListProps {
@@ -37,6 +38,19 @@ const categoryLabels = {
 
 export default function ForumPostList({ posts, onPostUpdate }: ForumPostListProps) {
   const [selectedPost, setSelectedPost] = useState<ForumPost | null>(null)
+  const [auth, setAuth] = useState<DeveloperAuth | null>(null)
+
+  // 檢查開發者身份
+  useEffect(() => {
+    const savedAuth = localStorage.getItem('developerAuth')
+    if (savedAuth) {
+      try {
+        setAuth(JSON.parse(savedAuth))
+      } catch (error) {
+        console.error('Error parsing saved auth:', error)
+      }
+    }
+  }, [])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -61,6 +75,38 @@ export default function ForumPostList({ posts, onPostUpdate }: ForumPostListProp
     onPostUpdate()
   }
 
+  const handleDeletePost = async (e: React.MouseEvent, post: ForumPost) => {
+    e.stopPropagation() // 防止觸發貼文點擊
+    
+    if (!auth) return
+    
+    if (!confirm(`確定要刪除討論「${post.title}」嗎？`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/forum/admin/posts/${post.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`,
+        },
+        body: JSON.stringify({ reason: '開發者刪除' }),
+      })
+
+      if (response.ok) {
+        alert('討論已刪除')
+        onPostUpdate()
+      } else {
+        const error = await response.json()
+        alert(error.error || '刪除失敗')
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      alert('刪除失敗')
+    }
+  }
+
   if (posts.length === 0) {
     return (
       <div className="text-center py-12">
@@ -80,7 +126,7 @@ export default function ForumPostList({ posts, onPostUpdate }: ForumPostListProp
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group"
             onClick={() => handlePostClick(post)}
           >
             <div className="flex items-start justify-between mb-4">
@@ -125,6 +171,18 @@ export default function ForumPostList({ posts, onPostUpdate }: ForumPostListProp
                   <span>0</span>
                 </div>
               </div>
+              
+              {/* 開發者刪除按鈕 - 隱藏，只有通過快捷鍵進入開發者模式才顯示 */}
+              {auth && (
+                <button
+                  onClick={(e) => handleDeletePost(e, post)}
+                  className="flex items-center space-x-1 px-2 py-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded text-sm transition-colors opacity-0 group-hover:opacity-100"
+                  title="刪除討論 (開發者功能)"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>刪除</span>
+                </button>
+              )}
             </div>
           </motion.div>
         ))}

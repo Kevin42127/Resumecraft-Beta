@@ -3,16 +3,31 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { MessageSquare, Plus, Clock, User, ThumbsUp, MessageCircle, ArrowLeft } from 'lucide-react'
+import { MessageSquare, Plus, Clock, User, ThumbsUp, MessageCircle, ArrowLeft, Shield } from 'lucide-react'
 import ForumPostForm from '@/components/Forum/ForumPostForm'
 import ForumPostList from '@/components/Forum/ForumPostList'
+import DeveloperPanel from '@/components/Forum/DeveloperPanel'
 import { ForumPost } from '@/types/forum'
 import WelcomeBanner from '@/components/WelcomeBanner'
 
 export default function ForumPage() {
   const [posts, setPosts] = useState<ForumPost[]>([])
   const [showPostForm, setShowPostForm] = useState(false)
+  const [showDeveloperPanel, setShowDeveloperPanel] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  // 隱藏的開發者入口 - 按 Ctrl+Shift+D 開啟
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+        event.preventDefault()
+        setShowDeveloperPanel(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     fetchPosts()
@@ -150,6 +165,8 @@ export default function ForumPage() {
                   <span>保護個人隱私，不要分享敏感資訊</span>
                 </div>
               </div>
+              
+
             </div>
           </div>
         </div>
@@ -160,6 +177,15 @@ export default function ForumPage() {
         <ForumPostForm
           onClose={() => setShowPostForm(false)}
           onPostCreated={handlePostCreated}
+        />
+      )}
+
+      {/* Developer Panel Modal */}
+      {showDeveloperPanel && (
+        <DeveloperPanel
+          onClose={() => setShowDeveloperPanel(false)}
+          posts={posts}
+          onPostUpdate={fetchPosts}
         />
       )}
     </div>

@@ -6,8 +6,9 @@ let posts: ForumPost[] = []
 
 export async function GET() {
   try {
-    // 按創建時間排序，最新的在前
-    const sortedPosts = posts.sort((a, b) => 
+    // 過濾掉已刪除的討論，按創建時間排序，最新的在前
+    const activePosts = posts.filter(post => !post.isDeleted)
+    const sortedPosts = activePosts.sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
 
