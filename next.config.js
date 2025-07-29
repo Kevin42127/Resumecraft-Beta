@@ -1,16 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 效能優化設定
-  swcMinify: true,
-  compress: true,
-  poweredByHeader: false,
-  
-  // 圖片優化
+  // 靜態導出配置 (Netlify部署必需)
+  output: 'export',
+  trailingSlash: true,
   images: {
+    unoptimized: true, // 靜態導出需要
     domains: ['localhost'],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
   },
+  
+  // 效能優化設定
+  swcMinify: true,
+  compress: true,
+  poweredByHeader: false,
   
   // 實驗性功能
   experimental: {
