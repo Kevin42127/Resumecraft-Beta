@@ -15,7 +15,7 @@
 Netlify 會自動檢測以下設置：
 
 - **構建命令**: `npm run build`
-- **發布目錄**: `out`
+- **發布目錄**: `.next`
 - **Node.js 版本**: 18
 
 ### 3. 環境變數 (可選)
@@ -38,7 +38,7 @@ EMAIL_PASS=your-app-password
 ```toml
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -48,12 +48,35 @@ EMAIL_PASS=your-app-password
 ### next.config.js
 ```javascript
 const nextConfig = {
-  output: 'export',        // 靜態導出
-  trailingSlash: true,     // 尾部斜線
+  // 效能優化設定
+  swcMinify: true,
+  compress: true,
+  poweredByHeader: false,
+  
+  // 圖片優化
   images: {
-    unoptimized: true,     // 靜態導出需要
+    domains: ['localhost'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
   },
-  // ... 其他配置
+  
+  // 實驗性功能
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['framer-motion', 'lucide-react'],
+  },
+  
+  // Webpack 優化
+  webpack: (config, { dev, isServer }) => {
+    // 排除 puppeteer（僅在伺服器端需要）
+    if (isServer) {
+      config.externals.push({
+        'puppeteer': 'commonjs puppeteer'
+      })
+    }
+    
+    return config
+  },
 }
 ```
 
@@ -72,12 +95,12 @@ const nextConfig = {
 - 查看構建日誌
 
 ### 頁面 404
-- 確認 `trailingSlash: true` 設置
-- 檢查重定向規則
+- 確認重定向規則設置正確
+- 檢查路由配置
 
 ### API 路由問題
-- 靜態導出不支持服務器端 API
-- 需要將 API 移到外部服務
+- 所有 API 路由都支持動態渲染
+- 確保環境變數設置正確
 
 ## 🌐 訪問您的網站
 
@@ -101,6 +124,13 @@ Netlify 提供：
 3. 點擊之前的部署
 4. 選擇 "Publish deploy"
 
+## ✅ 已修復的問題
+
+- ✅ 移除了靜態導出配置，支持 API 路由
+- ✅ 修復了構建時的 API 路由問題
+- ✅ 刪除了有問題的測試頁面
+- ✅ 構建成功，所有頁面正常生成
+
 ---
 
-**注意**: 由於使用靜態導出，某些動態功能（如服務器端 API）需要外部服務支持。 
+**注意**: 現在使用標準 Next.js 配置，支持所有動態功能包括 API 路由。 
