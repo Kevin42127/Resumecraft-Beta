@@ -32,4 +32,19 @@ key.env
 
 # TypeScript
 *.tsbuildinfo
-next-env.d.ts 
+next-env.d.ts
+
+# .NET
+QuestPdfApi/bin/
+QuestPdfApi/obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!next.config.js
+!postcss.config.js
+!tailwind.config.js 

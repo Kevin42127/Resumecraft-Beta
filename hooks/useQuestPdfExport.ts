@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // QuestPDF API 配置
-const QUESTPDF_API_BASE = 'http://localhost:5000/api/pdf';
+const QUESTPDF_API_BASE = 'http://localhost:5101/api/pdf';
 
 // 類型定義
 export interface QuestPdfConfig {
