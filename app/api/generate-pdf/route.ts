@@ -2,20 +2,25 @@ import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
 
 // ResumeCraft 專用 PDF 產生 API
-// 優化版本：適應 Vercel 部署環境
+// Vercel 優化版本
 
 export async function POST(request: NextRequest) {
+  console.log('🚀 PDF 生成開始...')
+  
   try {
     const { html, filename = 'resume.pdf' } = await request.json()
 
     if (!html) {
+      console.error('❌ HTML 內容為空')
       return NextResponse.json(
         { error: 'HTML 內容為必填欄位' },
         { status: 400 }
       )
     }
 
-    // 啟動 Puppeteer 無頭瀏覽器（Vercel 優化設置）
+    console.log('📋 準備啟動 Puppeteer...')
+
+    // Vercel 環境優化的 Puppeteer 配置
     const browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -27,13 +32,28 @@ export async function POST(request: NextRequest) {
         '--no-zygote',
         '--disable-gpu',
         '--disable-web-security',
-        '--disable-features=VizDisplayCompositor'
+        '--disable-features=VizDisplayCompositor',
+        '--disable-extensions',
+        '--disable-plugins',
+        '--disable-images',
+        '--disable-javascript',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+        '--disable-field-trial-config',
+        '--disable-ipc-flooding-protection',
+        '--memory-pressure-off',
+        '--max_old_space_size=4096'
       ],
-      timeout: 30000, // 30秒超時
+      timeout: 25000, // 25秒超時（Vercel 限制 30秒）
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     })
+
+    console.log('✅ Puppeteer 啟動成功')
 
     try {
       const page = await browser.newPage()
+      console.log('📄 新頁面創建成功')
 
       // 設置視口大小
       await page.setViewport({
@@ -42,11 +62,18 @@ export async function POST(request: NextRequest) {
         deviceScaleFactor: 2, // 提高解析度
       })
 
+      // 設置用戶代理（避免某些網站檢測）
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+
+      console.log('📝 載入 HTML 內容...')
+      
       // 載入 HTML 內容
       await page.setContent(html, {
         waitUntil: 'networkidle0',
-        timeout: 10000,
+        timeout: 15000,
       })
+
+      console.log('🎨 添加 PDF 優化樣式...')
 
       // 添加 PDF 優化樣式
       await page.addStyleTag({
@@ -130,11 +157,23 @@ export async function POST(request: NextRequest) {
           .mb-6 { margin-bottom: 1.5rem !important; }
           .mb-4 { margin-bottom: 1rem !important; }
           .mb-8 { margin-bottom: 2rem !important; }
+          
+          /* Vercel 環境特定優化 */
+          @media print {
+            * { 
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+          }
         `
       })
 
+      console.log('⏳ 等待內容完全載入...')
+      
       // 等待內容完全載入
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      console.log('📄 開始生成 PDF...')
 
       // 產生高品質 PDF
       const pdf = await page.pdf({
@@ -148,22 +187,47 @@ export async function POST(request: NextRequest) {
         },
         preferCSSPageSize: false,
         scale: 1.0,
+        timeout: 20000, // 20秒超時
       })
+
+      console.log(`✅ PDF 生成成功！大小: ${pdf.length} bytes`)
 
       // 回傳 PDF Blob
       return new NextResponse(pdf, {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="${filename}"`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       })
     } finally {
+      console.log('🧹 清理瀏覽器資源...')
       await browser.close()
+      console.log('✅ 瀏覽器資源清理完成')
     }
   } catch (error) {
-    console.error('PDF generation error:', error)
+    console.error('❌ PDF 生成錯誤:', error)
+    
+    // 詳細錯誤信息
+    const errorMessage = error instanceof Error ? error.message : '未知錯誤'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    console.error('錯誤詳情:', {
+      message: errorMessage,
+      stack: errorStack,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      vercel: !!process.env.VERCEL,
+    })
+    
     return NextResponse.json(
-      { error: 'PDF 生成失敗，請稍後再試' },
+      { 
+        error: 'PDF 生成失敗，請稍後再試',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     )
   }
